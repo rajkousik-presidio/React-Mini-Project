@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useContext, useEffect } from 'react';
+import { PortfolioContext } from './contexts/PortfolioContext';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import WelcomePage from './components/WelcomePage/WelcomePage';
+import BuyStocks from './components/BuyStocks/BuyStocks';
+import Portfolio from './components/Portfolio/Portfolio';
+import ErrorPage from './components/ErrorPage/ErrorPage';
+import LoadingPage from './components/LoadingPage/LoadingPage';
+import Header from './components/Header/Header';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const { user, setUser, setBalance } = useContext(PortfolioContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('username');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      setUser(userData);
+      setBalance(userData.balance);
+      navigate('/buy'); // Redirect to buy stocks if already logged in
+    }
+  }, [setUser, setBalance, navigate]);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Header />
+      <Routes>
+        <Route path="/" element={user ? <Navigate to="/buy" /> : <WelcomePage />} />
+        <Route path="/buy" element={<BuyStocks />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/error" element={<ErrorPage />} />
+        <Route path="/loading" element={<LoadingPage />} />
+      </Routes>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
