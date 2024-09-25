@@ -1,0 +1,29 @@
+.circular-timer {
+  margin-right: 1rem;
+  position: relative;
+  width: 50px;
+  height: 50px;
+
+  .progress-ring {
+    position: relative;
+    transform: rotate(-90deg); // Rotate to start the circle at the top
+  }
+
+  .progress-ring__circle__background {
+    stroke: #e0e0e0; // Background color for the circle
+  }
+
+  .progress-ring__circle {
+    transition: stroke-dashoffset 1s linear; // Animate the progress
+  }
+
+  .timer-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    font-weight: bold;
+    color: #00bcd4; // Timer color
+  }
+}

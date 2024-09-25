@@ -84,8 +84,26 @@ const stocksSlice = createSlice({
       state.stocks = defaultStocks;
       state.purchasedStocks = [];
     },
+    updateStockPrices: (state, action) => {
+      const newPrices = action.payload; // New stock prices
+      
+      // Update prices for stocks
+      state.stocks = state.stocks.map(stock => {
+        const updatedStock = newPrices.find(s => s.id === stock.id);
+        return updatedStock ? { ...stock, price: updatedStock.price } : stock;
+      });
+
+      // Update prices for purchased stocks
+      state.purchasedStocks = state.purchasedStocks.map(purchasedStock => {
+        const updatedStock = newPrices.find(s => s.id === purchasedStock.id);
+        return updatedStock ? { ...purchasedStock, price: updatedStock.price } : purchasedStock;
+      });
+
+      // Save updated prices to localStorage
+      saveState(state.stocks, state.purchasedStocks);
+    },
   },
 });
 
-export const { buyStock, sellStock, resetStocks } = stocksSlice.actions;
+export const { buyStock, sellStock, resetStocks, updateStockPrices } = stocksSlice.actions;
 export default stocksSlice.reducer;
