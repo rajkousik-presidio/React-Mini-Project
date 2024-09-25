@@ -3,10 +3,13 @@ import { PortfolioContext } from "../../contexts/PortfolioContext";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import "./Header.scss";
+import { resetStocks } from "../../store/slices/stocksSlice";
+import { useDispatch } from "react-redux";
 
 const Header = () => {
   const { user, setUser, setBalance } = useContext(PortfolioContext);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
     localStorage.removeItem("username");
@@ -15,6 +18,9 @@ const Header = () => {
 
     setUser(null);
     setBalance(0);
+
+    dispatch(resetStocks());
+
     navigate("/");
   };
 

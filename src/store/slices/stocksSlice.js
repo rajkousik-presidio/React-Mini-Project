@@ -1,15 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const defaultStocks = [
+  { id: 1, name: 'Apple', price: 150, image: 'https://placehold.co/4000?text=Hello+World', quantity: 100 },
+  { id: 2, name: 'Tesla', price: 700, image: 'https://placehold.co/6000x4000', quantity: 50 },
+];
+
 // Helper functions to handle localStorage
 const loadState = () => {
   const savedStocks = localStorage.getItem('stocks');
   const savedPurchasedStocks = localStorage.getItem('purchasedStocks');
   
   return {
-    stocks: savedStocks ? JSON.parse(savedStocks) : [
-      { id: 1, name: 'Apple', price: 150, image: 'https://placehold.co/4000?text=Hello+World', quantity: 100 },
-      { id: 2, name: 'Tesla', price: 700, image: 'https://placehold.co/6000x4000', quantity: 50 },
-    ],
+    stocks: savedStocks ? JSON.parse(savedStocks) : defaultStocks,
     purchasedStocks: savedPurchasedStocks ? JSON.parse(savedPurchasedStocks) : [],
   };
 };
@@ -78,8 +80,12 @@ const stocksSlice = createSlice({
         saveState(state.stocks, state.purchasedStocks);
       }
     },
+    resetStocks: (state) => {
+      state.stocks = defaultStocks;
+      state.purchasedStocks = [];
+    },
   },
 });
 
-export const { buyStock, sellStock } = stocksSlice.actions;
+export const { buyStock, sellStock, resetStocks } = stocksSlice.actions;
 export default stocksSlice.reducer;
