@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { sellStock } from "../../store/slices/stocksSlice";
 import HeaderStocks from "../HeaderStocks/HeaderStocks";
@@ -11,6 +11,8 @@ const Portfolio = () => {
   const { balance, setBalance } = useContext(PortfolioContext);
   const dispatch = useDispatch();
   const purchasedStocks = useSelector((state) => state.stocks.purchasedStocks);
+
+  const previousPricesRef = useRef({});
   const [filteredStocks, setFilteredStocks] = useState(purchasedStocks);
 
   const handleSearch = (searchTerm) => {
@@ -47,18 +49,27 @@ const Portfolio = () => {
       return;
     }
 
-    // Calculate total sell value
     const totalGain = stock.price * quantity;
-
-    // Proceed with sale
     dispatch(sellStock({ stockId: stock.id, quantity }));
     setBalance(balance + totalGain);
     toast.success(`Successfully sold ${quantity} shares of ${stock.name}`);
   };
 
   useEffect(() => {
+    // Track price changes and update the ref
+    const newPrices = {};
+    purchasedStocks.forEach((stock) => {
+      const prevPrice = previousPricesRef.current[stock.id] || stock.price;
+      let status = 'equal';
+      if (stock.price > prevPrice.price) status = 'increase';
+      else if (stock.price < prevPrice.price) status = 'decrease';
+      
+      newPrices[stock.id] = { price: stock.price, status };
+    });
+
+    previousPricesRef.current = newPrices;
     setFilteredStocks(purchasedStocks);
-  }, [purchasedStocks]);
+  }, [purchasedStocks]); // Only trigger when `purchasedStocks` change
 
   return (
     <div className="portfolio">
@@ -70,7 +81,13 @@ const Portfolio = () => {
       <div className="stocks-list">
         {filteredStocks.length > 0 ? (
           filteredStocks.map((stock) => (
-            <StockCard key={stock.id} stock={stock} onSell={handleSellStock} isPortfolio={true}/>
+            <StockCard 
+              key={stock.id} 
+              stock={stock} 
+              onSell={handleSellStock} 
+              isPortfolio={true} 
+              priceStatus={previousPricesRef.current[stock.id]?.status || 'equal'} 
+            />
           ))
         ) : (
           <p>No stocks in your portfolio yet.</p>

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { buyStock } from '../../store/slices/stocksSlice';
 import HeaderStocks from '../HeaderStocks/HeaderStocks';
@@ -11,6 +11,8 @@ const BuyStocks = () => {
   const { balance, setBalance } = useContext(PortfolioContext);
   const dispatch = useDispatch();
   const stocks = useSelector((state) => state.stocks.stocks);
+
+  const previousPricesRef = useRef({});
   const [filteredStocks, setFilteredStocks] = useState(stocks);
 
   const handleSearch = (searchTerm) => {
@@ -37,43 +39,52 @@ const BuyStocks = () => {
       return;
     }
 
-    // Check if the requested quantity is greater than available stock
     if (quantity > stock.quantity) {
       toast.error(`Insufficient stock. Only ${stock.quantity} shares of ${stock.name} are available.`);
       return;
     }
 
-    // Calculate total cost
     const totalCost = stock.price * quantity;
 
-    // Check if user has enough balance
     if (balance < totalCost) {
       toast.error('Insufficient balance');
       return;
     }
 
-    // If sufficient balance, proceed with purchase
     dispatch(buyStock({ stockId: stock.id, quantity }));
     setBalance(balance - totalCost);
     toast.success(`Successfully purchased ${quantity} shares of ${stock.name}`);
   };
 
   useEffect(() => {
+    // Track price changes and update the ref
+    const newPrices = {};
+    stocks.forEach((stock) => {
+      const prevPrice = previousPricesRef.current[stock.id] || stock.price;
+      let status = 'equal';
+      if (stock.price > prevPrice.price) status = 'increase';
+      else if (stock.price < prevPrice.price) status = 'decrease';
+      
+      newPrices[stock.id] = { price: stock.price, status };
+    });
+
+    previousPricesRef.current = newPrices;
     setFilteredStocks(stocks);
-  }, [stocks]);
+  }, [stocks]); // Only trigger when `stocks` change
 
   return (
     <div className="buy-stocks">
       <HeaderStocks onSearch={handleSearch} onSort={handleSort} totalAmount={balance} />
       <div className="stocks-list">
-  {filteredStocks.map((stock) => (
-    <StockCard 
-      key={stock.id} 
-      stock={stock} 
-      onBuy={handleBuyStock} 
-    />
-  ))}
-</div>
+        {filteredStocks.map((stock) => (
+          <StockCard 
+            key={stock.id} 
+            stock={stock} 
+            onBuy={handleBuyStock} 
+            priceStatus={previousPricesRef.current[stock.id]?.status || 'equal'} 
+          />
+        ))}
+      </div>
     </div>
   );
 };

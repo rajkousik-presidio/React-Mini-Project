@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { PortfolioContext } from "../../contexts/PortfolioContext";
-import { FaMoneyBillWave, FaSyncAlt } from "react-icons/fa"; // FaSyncAlt for refresh icon
+import { FaMoneyBillWave, FaSyncAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { resetStocks } from "../../store/slices/stocksSlice";
 import { useSelector } from "react-redux";
 import "./Header.scss";
-import { updateStockPrices } from "../../store/slices/stocksSlice"; // New action for updating stock prices
+import { updateStockPrices } from "../../store/slices/stocksSlice";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CircularTimer from "../CircularTimer/CircularTimer";
 
@@ -15,10 +15,9 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
-  const [timer, setTimer] = useState(60); // Timer starts from 60 seconds
-  const stocks = useSelector((state) => state.stocks.stocks); // Get current stocks
+  const [timer, setTimer] = useState(60);
+  const stocks = useSelector((state) => state.stocks.stocks);
 
-  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("stocks");
@@ -29,7 +28,6 @@ const Header = () => {
     navigate("/");
   };
 
-  // Generate a random price, with higher probability for 400-1000
   const getRandomPrice = () => {
     const random = Math.random();
     if (random < 0.6) {
@@ -39,25 +37,23 @@ const Header = () => {
     }
   };
 
-  // Timer effect
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 60)); // Countdown timer
+      setTimer((prev) => (prev > 0 ? prev - 1 : 60));
       if (timer === 0) {
-        refreshStockPrices(); // Update stock prices when timer hits 0
+        refreshStockPrices();
       }
-    }, 1000); // Update every second
+    }, 1000);
 
-    return () => clearInterval(interval); // Cleanup
+    return () => clearInterval(interval);
   }, [timer]);
 
-  // Update stock prices action
   const refreshStockPrices = () => {
     const updatedStocks = stocks.map(stock => ({
       ...stock,
       price: getRandomPrice()
     }));
-    dispatch(updateStockPrices(updatedStocks)); // Dispatch updated prices
+    dispatch(updateStockPrices(updatedStocks));
   };
 
   return (
