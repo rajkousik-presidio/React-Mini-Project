@@ -30,19 +30,16 @@ const Portfolio = () => {
   };
 
   const handleSellStock = (stock) => {
-    // Prompt user for the quantity to sell
     const quantity = parseInt(
       prompt(`How many shares of ${stock.name} would you like to sell?`),
       10
     );
 
-    // If invalid quantity, show error
     if (!quantity || quantity <= 0 || isNaN(quantity)) {
       toast.error("Invalid quantity entered");
       return;
     }
 
-    // Check if the requested quantity is greater than what the user owns
     if (quantity > stock.purchasedQuantity) {
       toast.error(
         `You only own ${stock.purchasedQuantity} shares of ${stock.name}.`
@@ -55,7 +52,7 @@ const Portfolio = () => {
 
     // Proceed with sale
     dispatch(sellStock({ stockId: stock.id, quantity }));
-    setBalance(balance + totalGain); // Increase balance
+    setBalance(balance + totalGain);
     toast.success(`Successfully sold ${quantity} shares of ${stock.name}`);
   };
 

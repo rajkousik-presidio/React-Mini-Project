@@ -10,19 +10,22 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("username");
+    localStorage.removeItem("stocks");
+    localStorage.removeItem("purchasedStocks");
+
     setUser(null);
     setBalance(0);
-    navigate("/"); // Redirect to welcome page
+    navigate("/");
   };
 
   return (
     <div className="header">
       <div className="header-left">
         <FaMoneyBillWave className="app-icon" />
-        <h2>StockTracker</h2> {/* App name */}
+        <h2>StockTracker</h2>
       </div>
       <div className="header-right">
-        {user && ( // Show logout button only if the user is logged in
+        {user && (
           <div className='profile'>
             <p>Hola {user.username ? <span> {user.username}!</span> : <span>User</span>}</p>
             <button className="btn btn-secondary" onClick={handleLogout}>

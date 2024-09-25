@@ -1,4 +1,3 @@
-// BuyStocks.jsx
 import React, { useContext, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { buyStock } from '../../store/slices/stocksSlice';
@@ -6,7 +5,7 @@ import HeaderStocks from '../HeaderStocks/HeaderStocks';
 import StockCard from '../StockCard/StockCard';
 import './BuyStocks.scss';
 import { PortfolioContext } from '../../contexts/PortfolioContext';
-import { toast } from 'react-toastify'; // Make sure to install react-toastify
+import { toast } from 'react-toastify';
 
 const BuyStocks = () => {
   const { balance, setBalance } = useContext(PortfolioContext);
@@ -31,10 +30,8 @@ const BuyStocks = () => {
   };
 
   const handleBuyStock = (stock) => {
-    // Prompt user for the quantity
     const quantity = parseInt(prompt(`How many shares of ${stock.name} would you like to buy?`), 10);
 
-    // If invalid quantity, show error
     if (!quantity || quantity <= 0 || isNaN(quantity)) {
       toast.error('Invalid quantity entered');
       return;
@@ -57,7 +54,7 @@ const BuyStocks = () => {
 
     // If sufficient balance, proceed with purchase
     dispatch(buyStock({ stockId: stock.id, quantity }));
-    setBalance(balance - totalCost); // Deduct from balance
+    setBalance(balance - totalCost);
     toast.success(`Successfully purchased ${quantity} shares of ${stock.name}`);
   };
 
