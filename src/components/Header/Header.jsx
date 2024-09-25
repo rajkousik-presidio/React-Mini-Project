@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { PortfolioContext } from "../../contexts/PortfolioContext";
 import { FaMoneyBillWave } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Header.scss";
 
 const Header = () => {
@@ -22,7 +22,7 @@ const Header = () => {
     <div className="header">
       <div className="header-left">
         <FaMoneyBillWave className="app-icon" />
-        <h2>StockTracker</h2>
+        <h2 className="app-name"><Link to="/" className="app-name">StockTracker</Link></h2>
       </div>
       <div className="header-right">
         {user && (

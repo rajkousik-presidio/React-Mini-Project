@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { buyStock } from '../../store/slices/stocksSlice';
 import HeaderStocks from '../HeaderStocks/HeaderStocks';
@@ -11,7 +11,7 @@ const BuyStocks = () => {
   const { balance, setBalance } = useContext(PortfolioContext);
   const dispatch = useDispatch();
   const stocks = useSelector((state) => state.stocks.stocks);
-  const [filteredStocks, setFilteredStocks] = React.useState(stocks);
+  const [filteredStocks, setFilteredStocks] = useState(stocks);
 
   const handleSearch = (searchTerm) => {
     const filtered = stocks.filter((stock) =>
@@ -58,7 +58,7 @@ const BuyStocks = () => {
     toast.success(`Successfully purchased ${quantity} shares of ${stock.name}`);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setFilteredStocks(stocks);
   }, [stocks]);
 

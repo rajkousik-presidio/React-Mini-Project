@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { sellStock } from "../../store/slices/stocksSlice";
 import HeaderStocks from "../HeaderStocks/HeaderStocks";
@@ -11,7 +11,7 @@ const Portfolio = () => {
   const { balance, setBalance } = useContext(PortfolioContext);
   const dispatch = useDispatch();
   const purchasedStocks = useSelector((state) => state.stocks.purchasedStocks);
-  const [filteredStocks, setFilteredStocks] = React.useState(purchasedStocks);
+  const [filteredStocks, setFilteredStocks] = useState(purchasedStocks);
 
   const handleSearch = (searchTerm) => {
     const filtered = purchasedStocks.filter((stock) =>

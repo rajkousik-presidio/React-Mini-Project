@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "Apple",
+    "price": 150,
+    "image": "https://placehold.co/4000?text=Hello+World",
+    "quantity": 100
+  },    
+  {
+    "id": 2,
+    "name": "Tesla",
+    "price": 700,
+    "image": "https://placehold.co/6000x4000",
+    "quantity": 50
+  }
+]
