@@ -69,10 +69,14 @@ const BuyStocks = () => {
     <div className="buy-stocks">
       <HeaderStocks onSearch={handleSearch} onSort={handleSort} totalAmount={balance} />
       <div className="stocks-list">
-        {filteredStocks.map((stock) => (
-          <StockCard key={stock.id} stock={stock} onBuy={handleBuyStock} />
-        ))}
-      </div>
+  {filteredStocks.map((stock) => (
+    <StockCard 
+      key={stock.id} 
+      stock={stock} 
+      onBuy={handleBuyStock} 
+    />
+  ))}
+</div>
     </div>
   );
 };

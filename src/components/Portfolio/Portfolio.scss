@@ -1,14 +1,17 @@
-.buy-stocks {
-  padding: 0;
+.portfolio {
+  padding: 0rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: relative;
   top: 9vh;
-  width: 100vw;
   height: 130vh;
 
   .stocks-list {
     display: grid;
     grid-template-columns: repeat(5, minmax(200px, 1fr));
-    grid-gap: 2rem;
+    grid-gap: 2rem; 
     padding: 2rem;
+    width: 100vw;
   }
 }

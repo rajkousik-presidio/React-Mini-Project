@@ -1,4 +1,3 @@
-/* HeaderStocks.scss */
 .header-stocks {
   position: sticky;
   top: 9vh;
@@ -9,6 +8,7 @@
   align-items: center;
   padding: 1rem 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100vw;
 
   .header-left {
     display: flex;

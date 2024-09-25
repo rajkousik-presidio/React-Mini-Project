@@ -7,7 +7,7 @@ import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 const HeaderStocks = ({ onSearch, onSort, totalAmount }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const location = useLocation(); // To highlight the active link
+  const location = useLocation();
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);

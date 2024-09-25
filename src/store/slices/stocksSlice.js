@@ -1,40 +1,85 @@
-// src/features/stocksSlice.js
 import { createSlice } from '@reduxjs/toolkit';
+
+// Helper functions to handle localStorage
+const loadState = () => {
+  const savedStocks = localStorage.getItem('stocks');
+  const savedPurchasedStocks = localStorage.getItem('purchasedStocks');
+  
+  return {
+    stocks: savedStocks ? JSON.parse(savedStocks) : [
+      { id: 1, name: 'Apple', price: 150, image: 'https://placehold.co/4000?text=Hello+World', quantity: 100 },
+      { id: 2, name: 'Tesla', price: 700, image: 'https://placehold.co/6000x4000', quantity: 50 },
+    ],
+    purchasedStocks: savedPurchasedStocks ? JSON.parse(savedPurchasedStocks) : [],
+  };
+};
+
+const saveState = (stocks, purchasedStocks) => {
+  localStorage.setItem('stocks', JSON.stringify(stocks));
+  localStorage.setItem('purchasedStocks', JSON.stringify(purchasedStocks));
+};
+
+const initialState = loadState();
 
 const stocksSlice = createSlice({
   name: 'stocks',
-  initialState: {
-    stocks: [
-      { id: 1, name: 'Apple', price: 150, image: 'https://placehold.co/4000?text=Hello+World', quantity: 100 },
-      { id: 2, name: 'Tesla', price: 700, image: 'https://placehold.co/6000x4000', quantity: 50 },
-      // Add more stocks with quantity
-    ],
-    purchasedStocks: [],
-  },
+  initialState,
   reducers: {
     buyStock: (state, action) => {
       const { stockId, quantity } = action.payload;
       const stock = state.stocks.find((s) => s.id === stockId);
 
       if (stock && stock.quantity >= quantity) {
-        // Reduce stock quantity
         stock.quantity -= quantity;
 
-        // Add to purchased stocks
-        state.purchasedStocks.push({
-          ...stock,
-          purchasedQuantity: quantity,
-        });
+        const purchasedStock = state.purchasedStocks.find((s) => s.id === stockId);
 
-        // If stock quantity becomes zero, remove it from the list
+        if (purchasedStock) {
+          purchasedStock.purchasedQuantity += quantity;
+        } else {
+          state.purchasedStocks.push({ ...stock, purchasedQuantity: quantity });
+        }
+
         if (stock.quantity === 0) {
           state.stocks = state.stocks.filter((s) => s.id !== stockId);
         }
+
+        // Save to localStorage
+        saveState(state.stocks, state.purchasedStocks);
       }
     },
-    // Add additional reducers as needed
+    sellStock: (state, action) => {
+      const { stockId, quantity } = action.payload;
+      const purchasedStock = state.purchasedStocks.find((s) => s.id === stockId);
+
+      if (purchasedStock && purchasedStock.purchasedQuantity >= quantity) {
+        purchasedStock.purchasedQuantity -= quantity;
+
+        let availableStock = state.stocks.find((s) => s.id === stockId);
+
+        if (availableStock) {
+          availableStock.quantity += quantity;
+        } else {
+          state.stocks.push({
+            id: purchasedStock.id,
+            name: purchasedStock.name,
+            price: purchasedStock.price,
+            image: purchasedStock.image,
+            quantity: quantity,
+          });
+        }
+
+        // Remove from purchased stocks if all shares are sold
+        if (purchasedStock.purchasedQuantity === 0) {
+          state.purchasedStocks = state.purchasedStocks.filter((s) => s.id !== stockId);
+        }
+
+        // Save to localStorage
+        saveState(state.stocks, state.purchasedStocks);
+      }
+    },
   },
 });
 
-export const { buyStock } = stocksSlice.actions;
+export const { buyStock, sellStock } = stocksSlice.actions;
 export default stocksSlice.reducer;

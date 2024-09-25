@@ -1,26 +1,84 @@
-import { useContext } from 'react';
-import { PortfolioContext } from '../../contexts/PortfolioContext';
+import React, { useContext, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { sellStock } from "../../store/slices/stocksSlice";
+import HeaderStocks from "../HeaderStocks/HeaderStocks";
+import StockCard from "../StockCard/StockCard";
+import "./Portfolio.scss";
+import { PortfolioContext } from "../../contexts/PortfolioContext";
+import { toast } from "react-toastify";
 
 const Portfolio = () => {
-  const { portfolio, setPortfolio, balance, setBalance } = useContext(PortfolioContext);
+  const { balance, setBalance } = useContext(PortfolioContext);
+  const dispatch = useDispatch();
+  const purchasedStocks = useSelector((state) => state.stocks.purchasedStocks);
+  const [filteredStocks, setFilteredStocks] = React.useState(purchasedStocks);
 
-  const sellStock = (stock) => {
-    setPortfolio(portfolio.filter(item => item.id !== stock.id));
-    setBalance(balance + stock.price);
+  const handleSearch = (searchTerm) => {
+    const filtered = purchasedStocks.filter((stock) =>
+      stock.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredStocks(filtered);
   };
 
+  const handleSort = (order) => {
+    const sorted = [...filteredStocks].sort((a, b) => {
+      if (order === "asc") return a.price - b.price;
+      if (order === "desc") return b.price - a.price;
+      return 0;
+    });
+    setFilteredStocks(sorted);
+  };
+
+  const handleSellStock = (stock) => {
+    // Prompt user for the quantity to sell
+    const quantity = parseInt(
+      prompt(`How many shares of ${stock.name} would you like to sell?`),
+      10
+    );
+
+    // If invalid quantity, show error
+    if (!quantity || quantity <= 0 || isNaN(quantity)) {
+      toast.error("Invalid quantity entered");
+      return;
+    }
+
+    // Check if the requested quantity is greater than what the user owns
+    if (quantity > stock.purchasedQuantity) {
+      toast.error(
+        `You only own ${stock.purchasedQuantity} shares of ${stock.name}.`
+      );
+      return;
+    }
+
+    // Calculate total sell value
+    const totalGain = stock.price * quantity;
+
+    // Proceed with sale
+    dispatch(sellStock({ stockId: stock.id, quantity }));
+    setBalance(balance + totalGain); // Increase balance
+    toast.success(`Successfully sold ${quantity} shares of ${stock.name}`);
+  };
+
+  useEffect(() => {
+    setFilteredStocks(purchasedStocks);
+  }, [purchasedStocks]);
+
   return (
-    <div className="container">
-      <h2>Your Portfolio</h2>
-      <ul>
-        {portfolio.map(stock => (
-          <li key={stock.id}>
-            {stock.name} - ${stock.price}
-            <button onClick={() => sellStock(stock)}>Sell</button>
-          </li>
-        ))}
-      </ul>
-      <p>Balance: ${balance}</p>
+    <div className="portfolio">
+      <HeaderStocks
+        onSearch={handleSearch}
+        onSort={handleSort}
+        totalAmount={balance}
+      />
+      <div className="stocks-list">
+        {filteredStocks.length > 0 ? (
+          filteredStocks.map((stock) => (
+            <StockCard key={stock.id} stock={stock} onSell={handleSellStock} isPortfolio={true}/>
+          ))
+        ) : (
+          <p>No stocks in your portfolio yet.</p>
+        )}
+      </div>
     </div>
   );
 };

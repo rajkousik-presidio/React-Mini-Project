@@ -7,7 +7,7 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  height: 400px;  // taller rectangle for height > width
+  height: 400px;  
   width: 250px;
   transition: transform 0.3s ease;
 
@@ -18,7 +18,7 @@
 
   img {
     width: 100%;
-    height: 60%;  // Adjust to take up 60% of the card's height
+    height: 60%;  
     object-fit: cover;
     border-bottom: 1px solid #eee;
   }
@@ -34,6 +34,8 @@
   .stock-description{
     display: flex;
     flex-direction: column;
+    width: 100%;
+    padding: 0;
 
     .row{
       display: flex;
@@ -47,10 +49,11 @@
     // font-weight: bold;
     // color: #27ae60;
     margin-bottom: 0.5rem;
+    padding: 0 1.5rem;
   }
 
   button {
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     padding: 0.75rem 1.5rem;
     background-color: #00bcd4;
     color: white;
@@ -65,3 +68,4 @@
   }
 }
 }
+
