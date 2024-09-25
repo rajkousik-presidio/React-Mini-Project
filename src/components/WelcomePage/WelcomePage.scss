@@ -60,7 +60,7 @@ input[type="number"] {
           font-size: 1rem;
           border: 1px solid #ccc;
           border-radius: 5px;
-          width: 95%;
+          width: 100%;
         }
 
         button {
@@ -86,10 +86,4 @@ input[type="number"] {
     }
   }
 
-  .wave-image {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: auto;
-  }
 }

@@ -1,0 +1,14 @@
+.buy-stocks {
+  padding: 0;
+  position: relative;
+  top: 9vh;
+  width: 100vw;
+  height: 130vh;
+
+  .stocks-list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(200px, 1fr));
+    grid-gap: 2rem; // This already applies spacing for both rows and columns
+    padding: 2rem;
+  }
+}

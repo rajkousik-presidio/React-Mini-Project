@@ -72,7 +72,6 @@ const WelcomePage = () => {
           <img src={illustration} alt="Illustration" className="illustration" />
         </div>
       </div>
-      <img src={wave} alt="Wave" className="wave-image" />
             </div>
             </>
   );

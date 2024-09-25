@@ -23,9 +23,12 @@ const Header = () => {
       </div>
       <div className="header-right">
         {user && ( // Show logout button only if the user is logged in
-          <button className="btn btn-secondary" onClick={handleLogout}>
-            Logout
-          </button>
+          <div className='profile'>
+            <p>Hola {user.username ? <span> {user.username}!</span> : <span>User</span>}</p>
+            <button className="btn btn-secondary" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
         )}
       </div>
     </div>
