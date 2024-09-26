@@ -1,29 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import "./CircularTimer.scss";
 
-const CircularTimer = ({ duration, onRefresh }) => {
-  const [timer, setTimer] = useState(duration);
+const CircularTimer = ({ duration, timer }) => {
   const [progress, setProgress] = useState(100);
 
+  // Update progress whenever the timer updates
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prevTime) => {
-        if (prevTime === 1) {
-          onRefresh(); // Trigger refresh when the timer hits 0
-          return duration; // Reset timer
-        }
-        return prevTime - 1;
-      });
-
-      setProgress((prevProgress) => {
-        const newProgress = (prevProgress === 0 ? 100 : (prevProgress - 100 / duration));
-        return newProgress;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval); // Cleanup interval on unmount
-  }, [duration, onRefresh]);
+    const newProgress = (timer / duration) * 100;
+    setProgress(newProgress);
+  }, [timer, duration]);
 
   const circleRadius = 20;
   const circleCircumference = 2 * Math.PI * circleRadius;

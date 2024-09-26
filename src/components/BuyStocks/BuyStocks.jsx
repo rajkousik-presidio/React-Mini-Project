@@ -1,6 +1,6 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { buyStock } from '../../store/slices/stocksSlice';
+import { fetchStocks, buyStock } from '../../store/slices/stocksSlice'; // Import fetchStocks
 import HeaderStocks from '../HeaderStocks/HeaderStocks';
 import StockCard from '../StockCard/StockCard';
 import './BuyStocks.scss';
@@ -10,11 +10,29 @@ import { toast } from 'react-toastify';
 const BuyStocks = () => {
   const { balance, setBalance } = useContext(PortfolioContext);
   const dispatch = useDispatch();
+
   const stocks = useSelector((state) => state.stocks.stocks);
+  const stockStatus = useSelector((state) => state.stocks.status);
+  const error = useSelector((state) => state.stocks.error);
+  const priceStatus = useSelector((state) => state.stocks.priceStatus); // Get price status from Redux state
 
-  const previousPricesRef = useRef({});
-  const [filteredStocks, setFilteredStocks] = useState(stocks);
+  const [filteredStocks, setFilteredStocks] = useState([]);
 
+  // Fetch stocks when component mounts
+  useEffect(() => {
+    if (stockStatus === 'idle') {
+      dispatch(fetchStocks());
+    }
+  }, [stockStatus, dispatch]);
+
+  // Set filtered stocks after fetch succeeds
+  useEffect(() => {
+    if (stockStatus === 'succeeded') {
+      setFilteredStocks(stocks);
+    }
+  }, [stocks, stockStatus]);
+
+  // Handle search functionality
   const handleSearch = (searchTerm) => {
     const filtered = stocks.filter((stock) =>
       stock.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -22,6 +40,7 @@ const BuyStocks = () => {
     setFilteredStocks(filtered);
   };
 
+  // Handle sorting by price (ascending or descending)
   const handleSort = (order) => {
     const sorted = [...filteredStocks].sort((a, b) => {
       if (order === 'asc') return a.price - b.price;
@@ -31,6 +50,7 @@ const BuyStocks = () => {
     setFilteredStocks(sorted);
   };
 
+  // Handle buying stock logic
   const handleBuyStock = (stock) => {
     const quantity = parseInt(prompt(`How many shares of ${stock.name} would you like to buy?`), 10);
 
@@ -51,38 +71,35 @@ const BuyStocks = () => {
       return;
     }
 
+    // Dispatch buyStock action and update balance
     dispatch(buyStock({ stockId: stock.id, quantity }));
     setBalance(balance - totalCost);
     toast.success(`Successfully purchased ${quantity} shares of ${stock.name}`);
   };
 
-  useEffect(() => {
-    // Track price changes and update the ref
-    const newPrices = {};
-    stocks.forEach((stock) => {
-      const prevPrice = previousPricesRef.current[stock.id] || stock.price;
-      let status = 'equal';
-      if (stock.price > prevPrice.price) status = 'increase';
-      else if (stock.price < prevPrice.price) status = 'decrease';
-      
-      newPrices[stock.id] = { price: stock.price, status };
-    });
+  if (stockStatus === 'loading') {
+    return <div>Loading stocks...</div>;
+  }
 
-    previousPricesRef.current = newPrices;
-    setFilteredStocks(stocks);
-  }, [stocks]); // Only trigger when `stocks` change
+  if (stockStatus === 'failed') {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="buy-stocks">
       <HeaderStocks onSearch={handleSearch} onSort={handleSort} totalAmount={balance} />
       <div className="stocks-list">
         {filteredStocks.map((stock) => (
+          <>
           <StockCard 
             key={stock.id} 
             stock={stock} 
             onBuy={handleBuyStock} 
-            priceStatus={previousPricesRef.current[stock.id]?.status || 'equal'} 
-          />
+            priceStatus={priceStatus[stock.id]?.status || 'equal'} // Get price status from Redux state
+            />
+            {console.log("BuyStocks",priceStatus[stock.id])
+            }
+          </>
         ))}
       </div>
     </div>

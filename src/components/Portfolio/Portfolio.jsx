@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { sellStock } from "../../store/slices/stocksSlice";
 import HeaderStocks from "../HeaderStocks/HeaderStocks";
@@ -11,10 +11,11 @@ const Portfolio = () => {
   const { balance, setBalance } = useContext(PortfolioContext);
   const dispatch = useDispatch();
   const purchasedStocks = useSelector((state) => state.stocks.purchasedStocks);
+  const priceStatus = useSelector((state) => state.stocks.priceStatus); // Track price status from Redux
 
-  const previousPricesRef = useRef({});
   const [filteredStocks, setFilteredStocks] = useState(purchasedStocks);
 
+  // Handle search functionality
   const handleSearch = (searchTerm) => {
     const filtered = purchasedStocks.filter((stock) =>
       stock.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -22,6 +23,7 @@ const Portfolio = () => {
     setFilteredStocks(filtered);
   };
 
+  // Handle sorting by price
   const handleSort = (order) => {
     const sorted = [...filteredStocks].sort((a, b) => {
       if (order === "asc") return a.price - b.price;
@@ -31,6 +33,7 @@ const Portfolio = () => {
     setFilteredStocks(sorted);
   };
 
+  // Handle selling stock logic
   const handleSellStock = (stock) => {
     const quantity = parseInt(
       prompt(`How many shares of ${stock.name} would you like to sell?`),
@@ -56,20 +59,9 @@ const Portfolio = () => {
   };
 
   useEffect(() => {
-    // Track price changes and update the ref
-    const newPrices = {};
-    purchasedStocks.forEach((stock) => {
-      const prevPrice = previousPricesRef.current[stock.id] || stock.price;
-      let status = 'equal';
-      if (stock.price > prevPrice.price) status = 'increase';
-      else if (stock.price < prevPrice.price) status = 'decrease';
-      
-      newPrices[stock.id] = { price: stock.price, status };
-    });
-
-    previousPricesRef.current = newPrices;
+    // Sync filtered stocks with purchased stocks
     setFilteredStocks(purchasedStocks);
-  }, [purchasedStocks]); // Only trigger when `purchasedStocks` change
+  }, [purchasedStocks]); // Trigger on changes to purchasedStocks
 
   return (
     <div className="portfolio">
@@ -86,7 +78,7 @@ const Portfolio = () => {
               stock={stock} 
               onSell={handleSellStock} 
               isPortfolio={true} 
-              priceStatus={previousPricesRef.current[stock.id]?.status || 'equal'} 
+              priceStatus={priceStatus[stock.id]?.status || 'equal'} // Get price status from Redux state
             />
           ))
         ) : (

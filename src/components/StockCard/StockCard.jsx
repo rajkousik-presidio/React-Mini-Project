@@ -4,6 +4,7 @@ import './StockCard.scss';
 
 const StockCard = ({ stock, onBuy, onSell, isPortfolio, priceStatus }) => {
   const getPriceChangeIcon = () => {
+    console.log("card",stock, priceStatus);
     switch (priceStatus) {
       case 'increase':
         return <FaArrowUp style={{ color: 'green' }} />;
